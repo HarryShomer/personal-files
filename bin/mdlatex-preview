@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#############################################################
+# Wraps around mdlatex command and updates the file whenever 
+# a change is saved
+#
+# Dependencies - latex, pandoc, fswatch, mdlatex added to path
+#
+# arg $1 - Name of .md file to convert
+# arg $2 (Optional) - dir to store final pdf in
+#############################################################
+
+if [ -z "$1" ]; then
+    echo "Usage: mdlatex-preview <file>"
+    exit 1
+elif [[ ! -f "$1" ]]; then
+    echo "Error: File '$1' not found"
+    exit 1
+elif [[ ! $1 == *.md ]]; then
+    echo "Error: Input file must have an '.md' extension"
+    exit 1
+fi
+
+# Add destination dir to mdlatex cmd if given
+# Exit when given but doesn't exist
+if [ ! -z "$2" ] && [ ! -d "$2" ]; then
+    echo "Error: Path '$2' doesn't exist"
+    exit 1
+elif [ ! -z "$2" ] ; then
+    preview_cmd="mdlatex $1 $2"
+else 
+    preview_cmd="mdlatex $1"
+fi
+
+fswatch -o $1 | xargs -n1 $preview_cmd 

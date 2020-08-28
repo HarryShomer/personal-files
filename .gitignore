@@ -1,0 +1,6 @@
+# Everything except...
+/*
+/*/
+!.gitignore
+!.vimrc
+!/bin/
