@@ -4,5 +4,5 @@
 !.gitignore
 !.vimrc
 !/bin/
+!/scripts/
 !README.md
-!dual_monitors.sh
