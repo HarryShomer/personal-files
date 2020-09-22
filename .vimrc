@@ -7,6 +7,7 @@ Plug 'bling/vim-airline'
 Plug 'majutsushi/tagbar'
 Plug 'flazz/vim-colorschemes'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'valloric/youcompleteme'
 call plug#end()
 
 "" My Settings
@@ -22,8 +23,15 @@ set expandtab
 " Allows vim a.py b.py instead of vim -p a.py b.py
 tab all
 
+" YouCompleteMe
+let g:ycm_add_preview_to_completeopt = 0
+set completeopt-=preview 
+
 " Plugin Specific settings
 autocmd vimenter * NERDTree
+nmap <F6> :NERDTreeToggle<CR>
 filetype plugin on
 nmap <F8> :TagbarToggle<CR>
 colorscheme molokai
+
+
