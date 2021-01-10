@@ -16,5 +16,4 @@ if [ -z "$1" ]; then
 fi
 
 aur sync $1 --noview
-sudo pacman -S $1
 
