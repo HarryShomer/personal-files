@@ -10,4 +10,4 @@ printf "=============== Upgrading Pacman ===============\n"
 sudo pacman -Syu
 
 printf "\n\n=============== Upgrading Aurutils ===============\n" 
-aur sync --upgrades
+aur sync --upgrades --noview

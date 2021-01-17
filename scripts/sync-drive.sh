@@ -4,25 +4,32 @@
 # User rclone to sync folder to `backups` folder in google drive
 #
 # New folders get added to `backup_folders` array
-# New patterns to exclude get added to `exclude_args` str
+# New patterns to exclude get added to `exclude_patterns` array
 #
 # NOTE: Runs from root dir 
 ##############################################################
 
-echo "Moving to root dir"
 cd ~
 
-backup_folders=(
+declare -a backup_folders=(
     notes
     grad_courses
+    .gnucash
+)
+declare -a exclude_patterns=(
+    "__pycache__/"
+    "*.log"
+    "*.LNK"  # GnuCash file
+    "*.LCK"  # GnuCash file
 )
 
-# make sure to separate by space
-exclude_args='__pycache__/'
+# Join all exclude patterns
+# Each one needs to get passed by own --exclude flag
+exclude_args=${exclude_patterns[@]/#/--exclude }
+
 
 for folder in "${backup_folders[@]}"; 
 do 
     echo "--> Syncing $folder"
-    rclone sync $folder gdrive:/backups/$folder --exclude $exclude_args --progress
+    rclone sync $folder gdrive:/backups/$folder $exclude_args --progress
 done
-
