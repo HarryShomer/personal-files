@@ -25,9 +25,8 @@ declare -a exclude_patterns=(
 # Each one needs to get passed by own --exclude flag
 exclude_args=${exclude_patterns[@]/#/--exclude }
 
-
 for folder in "${backup_folders[@]}"; 
 do 
     echo "--> Syncing $folder"
-    #rclone sync $folder gdrive:/backups/$folder $exclude_args --progress
+    rclone sync $folder gdrive:/backups/$folder $exclude_args --copy-links --progress
 done
