@@ -1,0 +1,13 @@
+#!/bin/bash
+
+##############################################
+#
+# Upgrade all packages for pacman and aurutils
+#
+##############################################
+
+printf "=============== Upgrading Pacman ===============\n" 
+sudo pacman -Syu
+
+printf "\n\n=============== Upgrading Aurutils ===============\n" 
+aur sync --upgrades --noview

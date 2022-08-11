@@ -1,0 +1,71 @@
+#!/bin/bash
+
+#############################################################
+# Script for converting an md file through pandoc to a latex pdf
+#
+# Steps:
+#   1. Check if a file is passed, is exists, and is a markdown
+#   2. If a dir is passed check if it exists
+#   3. Pandoc -> pdf using pdflatex
+#   4. If any images were generated using graphviz delete the temp dir
+#   5. If a dir was specified then move the final file to it
+#
+# Dependencies - latex, pandoc
+#
+# arg $1 - Name of .md file to convert
+# arg $2 (Optional) - Dir to store final pdf in
+#############################################################
+
+# Step 1 - Check opts
+if [ -z "$1" ]; then
+    echo "Usage: mdlatex <file>"
+    exit 1
+elif [[ ! -f "$1" ]]; then
+    echo "Error: File '$1' not found"
+    exit 1
+elif [[ ! $1 == *.md ]]; then 
+    echo "Error: Input file must have an '.md' extension"
+    exit 1
+fi
+
+# Step 2
+# We test for == 2 since it's a consequence of xargs in mdlatex-preview
+if [ -z "$2" ] || [ "$2" == 1 ]; then
+    output_dir=false
+elif [ ! -d "$2" ]; then
+    echo "Error: Path '$2' doesn't exist"
+    exit 1
+else
+    output_dir=true
+fi
+
+# Same name for pdf
+pdf_file=${1/.md/.pdf}
+base_pdf_file=$(basename $pdf_file)
+
+# Delete pdf b4 just in case...trust me on this
+if [[ -f "$pdf_file" ]]; then
+    rm $pdf_file
+fi
+
+printf "Converting $(basename $1) to a latex pdf...\n"
+pandoc -t json $1 | graphviz_filter | pandoc -f json -V fontsize=12pt -V geometry:margin=1in -s -o $pdf_file
+
+# Delete dir created for graphviz images
+if [ -d "./graphviz-images" ]; then
+    rm -rf ./graphviz-images
+fi
+
+# Ensure worked properly
+# If so exit_code = 0 and $pdf_file exists 
+if [ $? -eq 0 ] && [ -f $pdf_file ]; then
+    printf "File converted SUCCESSFULLY\n"
+else
+    exit 1
+fi
+
+# If a dir was specified we just move the final result here
+if [ $output_dir == true ]; then
+    mv "$pdf_file" "$2/$base_pdf_file" -f
+    printf "Moved pdf to $(realpath $2)\n"
+fi

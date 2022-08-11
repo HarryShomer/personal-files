@@ -1,0 +1,32 @@
+#!/bin/bash
+
+###############################################
+# Modify Xorg conf file to set nvidia GPU as 
+# primary GPU or not
+#
+# Usage: 
+#   - `toggle-nvidia on`  - Change primary GPU *to* nvidia  
+#   - `toggle-nvidia off` - Change primary GPU *from* nvidia
+#
+# arg $1: `on` or `off`
+###############################################
+
+if [ -z "$1" ]; then
+    printf "Usage: toggle-nvidia <on/off>\n"
+    exit 1
+elif [ "$1" != "on" ] && [ "$1" != "off" ]; then
+    printf "Error: Argument can only be equal to either 'on' or 'off'\n"
+    exit 1
+fi
+
+file="/etc/X11/xorg.conf.d/nvidia.conf"
+line_num="$(grep PrimaryGPU $file -n | cut -c 1)"   # Line with PrimaryGPU setting
+line_first_char="$(sed "${line_num}q;d" $file | cut -c 1)"   # First char on line we want to change
+
+if [ "$1" == "on" ]; then
+    sudo sed -i "${line_num}s/#//" $file 
+
+elif [ "$1" == "off" ] && [ "$line_first_char" != "#" ] ; then
+    sudo sed -i -e "${line_num}s/^/#/" $file
+
+fi
