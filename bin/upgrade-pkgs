@@ -2,12 +2,14 @@
 
 ##############################################
 #
-# Upgrade all packages for pacman and aurutils
+# Update all packages for DNF and Flatpak
 #
 ##############################################
 
-printf "=============== Upgrading Pacman ===============\n" 
-sudo pacman -Syu
+printf "=============== Update DNF ===============\n" 
+sudo dnf update
 
-printf "\n\n=============== Upgrading Aurutils ===============\n" 
-aur sync --upgrades --noview
+printf "\n\n=============== Updating Flatpak ===============\n" 
+flatpak repair --user
+flatpak remove --unused
+sudo flatpak update
