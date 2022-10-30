@@ -1,0 +1,15 @@
+#!/bin/bash
+
+####################################################
+# Have both displays mirror each other 
+# First detects names of external monitor (HDMI) and the laptop (eDP)
+####################################################
+
+EXTERNAL_MONITOR=$(xrandr | grep -Po ".*?HDMI[^\s]*" | tr -d ' ')
+LAPTOP_MONITOR=$(xrandr  | grep -Po ".*?eDP[^\s]*" | tr -d ' ')
+
+# Ensures they are active
+xrandr --output $EXTERNAL_MONITOR --auto
+xrandr --output $LAPTOP_MONITOR --auto
+
+xrandr --output $EXTERNAL_MONITOR --same-as $LAPTOP_MONITOR

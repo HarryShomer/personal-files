@@ -1,0 +1,14 @@
+# Everything
+/*
+/*/
+
+# Except...
+!.gitignore
+!.vimrc
+!/bin/
+!/scripts/
+!README.md
+
+# Exception in scripts folder
+scripts/backup_folders
+scripts/msu_gym_time.py

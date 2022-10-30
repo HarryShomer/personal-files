@@ -1,0 +1,54 @@
+#!/usr/bin/python
+
+"""
+Pandoc filter to process code blocks with class "graphviz" into graphviz-generated images. 
+Does so by:
+    1. Saving the code as a .gv
+    2. Converting the gv to a .ps2
+    3. Converting the ps to a .pdf 
+
+This is done as I find it produces the best quality images with no excessive whitespace bordering.
+
+Dependencies:
+    - graphviz
+    - ps2pdf
+
+Code:
+    Converted from source here - https://github.com/jgm/pandocfilters/blob/master/examples/graphviz.py
+
+Example:
+    pandoc -t json graphviz_example.md | python graphviz_filter.py | pandoc -s -f json -o graphviz_example.pdf
+"""
+import os
+import sys
+from subprocess import check_call
+from pandocfilters import toJSONFilter, Para, Image, get_filename4code, get_caption, get_extension, get_value
+
+
+def render_graphviz(key, value, format, _):
+    if key == 'CodeBlock':
+        [[ident, classes, keyvals], code] = value
+        if "graphviz" in classes:
+            caption, typef, keyvals = get_caption(keyvals)
+            prog, keyvals = get_value(keyvals, u"prog", u"dot")
+            filetype = get_extension(format, "pdf", html="pdf", latex="pdf")
+            dest = get_filename4code("graphviz", code, filetype)
+
+            if not os.path.isfile(dest):
+                gv_file = f"{dest.split('.')[0]}.gv"
+                ps_file = f"{dest.split('.')[0]}.ps"
+
+                # Intermediary so we can use the command line tool
+                with open(gv_file, "w") as f:
+                    f.write(code)
+
+                # NOTE: Currently hardcodes style as "dot"
+                check_call(['dot', '-Tps2', gv_file, '-o', ps_file])
+                check_call(['ps2pdf', ps_file, dest])
+
+            return Para([Image([ident, [], keyvals], caption, [dest, typef])])
+
+
+if __name__ == "__main__":
+    toJSONFilter(render_graphviz)
+

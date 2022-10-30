@@ -1,0 +1,42 @@
+#!/bin/bash
+###############################################
+#
+# Add thumbail to files
+#
+# Notes:
+#   1. Add 'new' to end of file since ffmpeg 
+#      doesn't overwrite
+#   2. Doesn't delete old files (since
+#      (ffmpeg exit code isn't reliable)
+#
+# Args:
+#   $1: File(s) pattern - Case Sensitive!!!
+#   $2: Thumbnail img
+###############################################
+
+pattern=$1
+thumbnail=$2
+
+# Ensure all args
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: add-thumbail <files pattern> <path to thumbnail>"
+    exit 1
+fi
+
+# Thumbnail must exist
+if [[ ! -f "$thumbnail" ]]; then
+    echo "Error: Thumbnail '$2' not found"
+    exit 1
+fi
+
+
+for file in /home/harry/music/*$pattern*;
+do
+    # New file name creation
+    ext="${file##*.}"
+    file_no_ext="${file%.*}"
+    new_file_name="$file_no_ext-new.$ext"
+    
+    ffmpeg -i "$file" -i "$thumbnail" -map 0 -map 1 -c copy -c:v:1 png -disposition:v:1 attached_pic "$new_file_name"
+done
+
